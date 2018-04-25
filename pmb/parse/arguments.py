@@ -347,6 +347,8 @@ def arguments():
     install.add_argument("--recovery-no-kernel",
                          help="do not overwrite the existing kernel",
                          action="store_false", dest="recovery_flash_kernel")
+    install.add_argument("--split", help="install the boot and system partition"
+                         " in separated image files", action="store_true")
 
     # Action: menuconfig
     menuconfig = sub.add_parser("menuconfig", help="run menuconfig on"

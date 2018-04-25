@@ -23,7 +23,10 @@ import pmb.chroot
 
 def format_and_mount_boot(args):
     mountpoint = "/mnt/install/boot"
-    device = "/dev/installp1"
+    if not args.split:
+        device = "/dev/installp1"
+    else:
+        device = "/dev/install-boot"
     logging.info("(native) format " + device + " (boot, ext2), mount to " +
                  mountpoint)
     pmb.chroot.root(args, ["mkfs.ext2", "-F", "-q", "-L", "pmOS_boot", device])
@@ -33,7 +36,10 @@ def format_and_mount_boot(args):
 
 def format_and_mount_root(args):
     mountpoint = "/dev/mapper/pm_crypt"
-    device = "/dev/installp2"
+    if not args.split:
+        device = "/dev/installp2"
+    else:
+        device = "/dev/install-system"
     if args.full_disk_encryption:
         logging.info("(native) format " + device + " (root, luks), mount to " +
                      mountpoint)
@@ -52,8 +58,10 @@ def format_and_mount_pm_crypt(args):
     # Block device
     if args.full_disk_encryption:
         device = "/dev/mapper/pm_crypt"
-    else:
+    elif not args.split:
         device = "/dev/installp2"
+    else:
+        device = "/dev/install-system"
 
     # Format
     if not args.rsync:
