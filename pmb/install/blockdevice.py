@@ -124,8 +124,8 @@ def create_and_mount_image(args, size_boot, size_root):
     if not args.split:
         mount_image_paths.append([img_path_full, "/dev/install"])
     else:
-        mount_image_paths.append([img_path_boot, "/dev/install-boot"])
-        mount_image_paths.append([img_path_root, "/dev/install-root"])
+        mount_image_paths.append([img_path_boot, "/dev/installp1"])
+        mount_image_paths.append([img_path_root, "/dev/installp2"])
 
     for img_path, mount_point in mount_image_paths:
         logging.info("(native) mount " + mount_point +
