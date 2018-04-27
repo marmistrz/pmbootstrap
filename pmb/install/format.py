@@ -39,7 +39,7 @@ def format_and_mount_root(args):
     if not args.split:
         device = "/dev/installp2"
     else:
-        device = "/dev/install-system"
+        device = "/dev/install-root"
     if args.full_disk_encryption:
         logging.info("(native) format " + device + " (root, luks), mount to " +
                      mountpoint)
@@ -61,7 +61,7 @@ def format_and_mount_pm_crypt(args):
     elif not args.split:
         device = "/dev/installp2"
     else:
-        device = "/dev/install-system"
+        device = "/dev/install-root"
 
     # Format
     if not args.rsync:

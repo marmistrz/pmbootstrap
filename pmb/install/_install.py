@@ -46,9 +46,9 @@ def mount_device_rootfs(args, suffix="native"):
 
 def get_subpartitions_size(args):
     """
-    Calculate the size of the boot and system subpartition.
+    Calculate the size of the boot and root subpartition.
 
-    :returns: (boot, system) the size of the boot and system
+    :returns: (boot, root) the size of the boot and root
               partition as integer in bytes
     """
     # Calculate required sizes first
@@ -284,9 +284,9 @@ def install_system_image(args):
     # Partition and fill image/sdcard
     logging.info("*** (3/5) PREPARE INSTALL BLOCKDEVICE ***")
     pmb.chroot.shutdown(args, True)
-    (size_boot, size_system) = get_subpartitions_size(args)
+    (size_boot, size_root) = get_subpartitions_size(args)
     if not args.rsync:
-        pmb.install.blockdevice.create(args, size_boot, size_system)
+        pmb.install.blockdevice.create(args, size_boot, size_root)
         if not args.split:
             pmb.install.partition(args, size_boot)
     if not args.split:

@@ -70,12 +70,12 @@ def mount_sdcard(args):
             raise RuntimeError("Aborted.")
 
 
-def create_and_mount_image(args, size_boot, size_system):
+def create_and_mount_image(args, size_boot, size_root):
     """
     Create a new image file, and mount it as /dev/install.
 
     :param size_boot: size of the boot partition in bytes
-    :param size_system: size of the system partition in bytes
+    :param size_root: size of the root partition in bytes
     """
     # Short variables for paths
     chroot = args.work + "/chroot_native"
@@ -83,13 +83,13 @@ def create_and_mount_image(args, size_boot, size_system):
     img_path_outside_full = chroot + img_path_full
     img_path_boot = "/home/pmos/rootfs/" + args.device + "-boot.img"
     img_path_outside_boot = chroot + img_path_boot
-    img_path_system = "/home/pmos/rootfs/" + args.device + "-system.img"
-    img_path_outside_system = chroot + img_path_system
+    img_path_root = "/home/pmos/rootfs/" + args.device + "-root.img"
+    img_path_outside_root = chroot + img_path_root
 
     # Umount and delete existing images
     for img_path, img_path_outside in [[img_path_full, img_path_outside_full],
                                        [img_path_boot, img_path_outside_boot],
-                                       [img_path_system, img_path_outside_system]]:
+                                       [img_path_root, img_path_outside_root]]:
         if os.path.exists(img_path_outside):
             pmb.helpers.mount.umount_all(args, chroot + "/mnt")
             pmb.install.losetup.umount(args, img_path)
@@ -99,7 +99,7 @@ def create_and_mount_image(args, size_boot, size_system):
                                    img_path_outside)
 
     # Make sure there is enough free space
-    size_mb = round((size_boot + size_system) / (1024**2))
+    size_mb = round((size_boot + size_root) / (1024**2))
     disk_data = os.statvfs(args.work)
     free = round((disk_data.f_bsize * disk_data.f_bavail) / (1024**2))
     if size_mb > free:
@@ -113,11 +113,11 @@ def create_and_mount_image(args, size_boot, size_system):
         pmb.chroot.root(args, ["truncate", "-s", size_mb_full, img_path_full])
     else:
         size_mb_boot = str(round(size_boot / (1024**2))) + "M"
-        size_mb_system = str(round(size_system / (1024**2))) + "M"
+        size_mb_root = str(round(size_root / (1024**2))) + "M"
         logging.info("(native) create " + args.device + "-boot.img (" + size_mb_boot + ")")
         pmb.chroot.root(args, ["truncate", "-s", size_mb_boot, img_path_boot])
-        logging.info("(native) create " + args.device + "-system.img (" + size_mb_system + ")")
-        pmb.chroot.root(args, ["truncate", "-s", size_mb_system, img_path_system])
+        logging.info("(native) create " + args.device + "-root.img (" + size_mb_root + ")")
+        pmb.chroot.root(args, ["truncate", "-s", size_mb_root, img_path_root])
 
     # Mount to /dev/install
     mount_image_paths = list()
@@ -125,7 +125,7 @@ def create_and_mount_image(args, size_boot, size_system):
         mount_image_paths.append([img_path_full, "/dev/install"])
     else:
         mount_image_paths.append([img_path_boot, "/dev/install-boot"])
-        mount_image_paths.append([img_path_system, "/dev/install-system"])
+        mount_image_paths.append([img_path_root, "/dev/install-root"])
 
     for img_path, mount_point in mount_image_paths:
         logging.info("(native) mount " + mount_point +
@@ -136,16 +136,16 @@ def create_and_mount_image(args, size_boot, size_system):
                                            "/chroot_native" + mount_point)
 
 
-def create(args, size_boot, size_system):
+def create(args, size_boot, size_root):
     """
     Create /dev/install (the "install blockdevice").
 
     :param size_boot: size of the boot partition in bytes
-    :param size_system: size of the system partition in bytes
+    :param size_root: size of the root partition in bytes
     """
     pmb.helpers.mount.umount_all(
         args, args.work + "/chroot_native/dev/install")
     if args.sdcard:
         mount_sdcard(args)
     else:
-        create_and_mount_image(args, size_boot, size_system)
+        create_and_mount_image(args, size_boot, size_root)
