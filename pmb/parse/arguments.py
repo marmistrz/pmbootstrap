@@ -323,7 +323,7 @@ def arguments():
                              " chroot and install to sdcard or image file")
     group = install.add_mutually_exclusive_group()
     group.add_argument("--sdcard", help="path to the sdcard device,"
-                         " eg. /dev/mmcblk0")
+                       " eg. /dev/mmcblk0")
     install.add_argument("--rsync", help="update the sdcard using rsync,"
                          " only works with --no-fde", action="store_true")
     install.add_argument("--cipher", help="cryptsetup cipher used to"
@@ -339,8 +339,8 @@ def arguments():
                          help="Specify kernel flavor to include in recovery"
                               " flashable zip", default=None)
     group.add_argument("--android-recovery-zip",
-                         help="generate TWRP flashable zip",
-                         action="store_true", dest="android_recovery_zip")
+                       help="generate TWRP flashable zip",
+                       action="store_true", dest="android_recovery_zip")
     install.add_argument("--recovery-install-partition", default="system",
                          help="partition to flash from recovery,"
                               " eg. external_sd",
@@ -349,7 +349,7 @@ def arguments():
                          help="do not overwrite the existing kernel",
                          action="store_false", dest="recovery_flash_kernel")
     group.add_argument("--split", help="install the boot and root partition"
-                         " in separated image files", action="store_true")
+                       " in separated image files", action="store_true")
 
     # Action: menuconfig
     menuconfig = sub.add_parser("menuconfig", help="run menuconfig on"
