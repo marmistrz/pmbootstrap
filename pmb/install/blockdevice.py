@@ -87,9 +87,9 @@ def create_and_mount_image(args, size_boot, size_root):
     img_path_outside_root = chroot + img_path_root
 
     # Umount and delete existing images
-    for img_path, img_path_outside in [[img_path_full, img_path_outside_full],
-                                       [img_path_boot, img_path_outside_boot],
-                                       [img_path_root, img_path_outside_root]]:
+    for img_path, img_path_outside in {img_path_full: img_path_outside_full,
+                                       img_path_boot: img_path_outside_boot,
+                                       img_path_root: img_path_outside_root}.items():
         if os.path.exists(img_path_outside):
             pmb.helpers.mount.umount_all(args, chroot + "/mnt")
             pmb.install.losetup.umount(args, img_path)
@@ -107,27 +107,24 @@ def create_and_mount_image(args, size_boot, size_root):
 
     # Create empty image files
     pmb.chroot.user(args, ["mkdir", "-p", "/home/pmos/rootfs"])
-    if not args.split:
-        size_mb_full = str(size_mb) + "M"
-        logging.info("(native) create " + args.device + ".img (" + size_mb_full + ")")
-        pmb.chroot.root(args, ["truncate", "-s", size_mb_full, img_path_full])
-    else:
-        size_mb_boot = str(round(size_boot / (1024**2))) + "M"
-        size_mb_root = str(round(size_root / (1024**2))) + "M"
-        logging.info("(native) create " + args.device + "-boot.img (" + size_mb_boot + ")")
-        pmb.chroot.root(args, ["truncate", "-s", size_mb_boot, img_path_boot])
-        logging.info("(native) create " + args.device + "-root.img (" + size_mb_root + ")")
-        pmb.chroot.root(args, ["truncate", "-s", size_mb_root, img_path_root])
+    size_mb_full = str(size_mb) + "M"
+    size_mb_boot = str(round(size_boot / (1024**2))) + "M"
+    size_mb_root = str(round(size_root / (1024**2))) + "M"
+    images = {img_path_full: size_mb_full}
+    if args.split:
+        images = {img_path_boot: size_mb_boot,
+                  img_path_root: size_mb_root}
+    for img_path, size_mb in images.items():
+        logging.info("(native) create " + os.path.basename(img_path) + " (" + size_mb + ")")
+        pmb.chroot.root(args, ["truncate", "-s", size_mb, img_path])
 
     # Mount to /dev/install
-    mount_image_paths = list()
-    if not args.split:
-        mount_image_paths.append([img_path_full, "/dev/install"])
-    else:
-        mount_image_paths.append([img_path_boot, "/dev/installp1"])
-        mount_image_paths.append([img_path_root, "/dev/installp2"])
+    mount_image_paths = {img_path_full: "/dev/install"}
+    if args.split:
+        mount_image_paths = {img_path_boot: "/dev/installp1",
+                             img_path_root: "/dev/installp2"}
 
-    for img_path, mount_point in mount_image_paths:
+    for img_path, mount_point in mount_image_paths.items():
         logging.info("(native) mount " + mount_point +
                      " (" + os.path.basename(img_path) + ")")
         pmb.install.losetup.mount(args, img_path)
