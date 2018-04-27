@@ -348,9 +348,14 @@ def install_system_image(args):
                      " Use 'pmbootstrap flasher boot' to do that.)")
 
     # Export information
-    logging.info("* If the above steps do not work, you can also create"
-                 " symlinks to the generated files with 'pmbootstrap export'"
-                 " and flash outside of pmbootstrap.")
+    if args.split:
+        logging.info("* Boot and root image files have been generated, run"
+                     " 'pmbootstrap export' to create symlinks and flash"
+                     " outside of pmbootstrap")
+    else:
+        logging.info("* If the above steps do not work, you can also create"
+                     " symlinks to the generated files with 'pmbootstrap export'"
+                     " and flash outside of pmbootstrap.")
 
 
 def install_recovery_zip(args):
