@@ -79,24 +79,18 @@ def create_and_mount_image(args, size_boot, size_root):
     """
     # Short variables for paths
     chroot = args.work + "/chroot_native"
-    img_path_full = "/home/pmos/rootfs/" + args.device + ".img"
-    img_path_outside_full = chroot + img_path_full
-    img_path_boot = "/home/pmos/rootfs/" + args.device + "-boot.img"
-    img_path_outside_boot = chroot + img_path_boot
-    img_path_root = "/home/pmos/rootfs/" + args.device + "-root.img"
-    img_path_outside_root = chroot + img_path_root
+    img_path_prefix = "/home/pmos/rootfs/" + args.device
+    img_path_full = img_path_prefix + ".img"
+    img_path_boot = img_path_prefix + "-boot.img"
+    img_path_root = img_path_prefix + "-root.img"
 
     # Umount and delete existing images
-    for img_path, img_path_outside in {img_path_full: img_path_outside_full,
-                                       img_path_boot: img_path_outside_boot,
-                                       img_path_root: img_path_outside_root}.items():
-        if os.path.exists(img_path_outside):
+    for img_path in [img_path_full, img_path_boot, img_path_root]:
+        outside = chroot + img_path
+        if os.path.exists(outside):
             pmb.helpers.mount.umount_all(args, chroot + "/mnt")
             pmb.install.losetup.umount(args, img_path)
             pmb.chroot.root(args, ["rm", img_path])
-            if os.path.exists(img_path_outside):
-                raise RuntimeError("Failed to remove old image file: " +
-                                   img_path_outside)
 
     # Make sure there is enough free space
     size_mb = round((size_boot + size_root) / (1024**2))
