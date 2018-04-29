@@ -351,7 +351,7 @@ def install_system_image(args):
     if args.split:
         logging.info("* Boot and root image files have been generated, run"
                      " 'pmbootstrap export' to create symlinks and flash"
-                     " outside of pmbootstrap")
+                     " outside of pmbootstrap.")
     else:
         logging.info("* If the above steps do not work, you can also create"
                      " symlinks to the generated files with 'pmbootstrap export'"
