@@ -23,6 +23,8 @@ test/static_code_analysis.sh
 fold_end "static_analysis"
 
 # pmbootstrap init
+mkdir -p ~/.cache/pmbootstrap
+ln -s aports ~/.cache/pmbootstrap/
 fold_start "init" "pmbootstrap init"
 yes "" | ./pmbootstrap.py init
 fold_end "init"
