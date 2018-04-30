@@ -55,7 +55,7 @@ config_keys = ["ccache_size", "device", "extra_packages", "hostname", "jobs",
 # overriden on the commandline)
 defaults = {
     "alpine_version": "edge",  # alternatively: latest-stable
-    "aports": os.path.normpath(pmb_src + "/aports"),
+    "aports": os.path.expanduser("~") + "/.cache/pmbootstrap/aports",
     "ccache_size": "5G",
     # aes-xts-plain64 would be better, but this is not supported on LineageOS
     # kernel configs

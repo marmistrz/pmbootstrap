@@ -21,6 +21,9 @@ import os
 import pmb.config
 
 
+APORTS_GIT = "https://github.com/postmarketOS/aports.git"
+
+
 def sanity_check(info, path):
     # "flash_methods" is legacy
     if "flash_methods" in info:
@@ -52,7 +55,10 @@ def deviceinfo(args, device=None):
 
     if not os.path.exists(args.aports):
         logging.fatal("Aports directory is missing, expected: " + args.aports)
-        logging.fatal("Please provide a path to the aports directory using the -p flag")
+        logging.fatal("Please download them or provide a path to an"
+                      "alternative aports directory using the -p flag")
+        logging.fatal("Aports can be downloaded using the following command: ")
+        logging.fatal("    git clone {} {}".format(APORTS_GIT, args.aports))
         raise RuntimeError("Aports directory missing")
 
     aport = args.aports + "/device/device-" + device
